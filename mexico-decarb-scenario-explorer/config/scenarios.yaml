@@ -1,0 +1,160 @@
+# scenarios.yaml
+# Mexico Decarbonization Scenario Explorer — Configuration
+# Based on: INECC INEGEI (2023), Mexico NDC (2020 update), IPCC AR6 SSP pathways
+
+# ============================================================
+# HISTORICAL DATA CONFIGURATION
+# ============================================================
+data:
+  base_year: 1990
+  reference_year: 2019     # Pre-COVID baseline for projections
+  projection_start: 2022
+  projection_end: 2050
+  unit: "MtCO2e"
+
+  sectors:
+    - Energía
+    - Transporte
+    - AFOLU
+    - Procesos Industriales
+    - Residuos
+
+# ============================================================
+# SCENARIO DEFINITIONS
+# ============================================================
+scenarios:
+
+  BAU:
+    label: "Business-as-Usual"
+    description: "Historical trend extrapolation; no additional climate policy beyond 2019."
+    color: "#e53935"
+    linestyle: "dash"
+    assumptions:
+      gdp_growth_annual: 0.024        # % annual real GDP growth
+      energy_intensity_change: -0.012  # % annual improvement (historical avg)
+      afolu_deforestation: "historical_trend"
+      renewable_share_2030: 0.30      # % of electricity generation
+
+  NDC_unconditional:
+    label: "NDC — Unconditional"
+    description: "Mexico's 2020 NDC: 22% GHG reduction vs BAU by 2030. No international support required."
+    color: "#fb8c00"
+    linestyle: "solid"
+    target_2030_pct_vs_bau: -0.22
+    target_2050_pct_vs_1990: -0.50
+    assumptions:
+      renewable_share_2030: 0.43
+      transport_efficiency_gain: 0.20
+      afolu_deforestation_reduction: 0.30   # vs BAU
+      methane_capture_rate: 0.40
+
+  NDC_conditional:
+    label: "NDC — Conditional"
+    description: "Mexico's 2020 NDC conditional target: 36% reduction vs BAU by 2030 with int'l climate finance."
+    color: "#43a047"
+    linestyle: "solid"
+    target_2030_pct_vs_bau: -0.36
+    target_2050_pct_vs_1990: -0.70
+    assumptions:
+      renewable_share_2030: 0.55
+      transport_electrification_2030: 0.15
+      afolu_deforestation_reduction: 0.60
+      methane_capture_rate: 0.65
+      carbon_price_2030_usd_tco2: 25
+
+  Pathway_15C:
+    label: "1.5°C Pathway"
+    description: "IPCC-consistent 1.5°C pathway (SSP1-1.9 analogue). Requires structural economic transition."
+    color: "#1565c0"
+    linestyle: "solid"
+    target_2030_pct_vs_bau: -0.51
+    target_2050_pct_vs_1990: -1.00   # Net zero
+    assumptions:
+      renewable_share_2030: 0.72
+      transport_electrification_2030: 0.35
+      afolu_net_sink_2040: true
+      carbon_price_2030_usd_tco2: 65
+      carbon_price_2050_usd_tco2: 150
+      methane_capture_rate: 0.90
+      industrial_efficiency_gain: 0.45
+
+# ============================================================
+# DEEP UNCERTAINTY DIMENSIONS
+# ============================================================
+uncertainty:
+  n_samples: 500       # Monte Carlo draws for robustness analysis
+  random_seed: 42
+
+  dimensions:
+    gdp_growth_annual:
+      distribution: "uniform"
+      min: 0.005
+      max: 0.040
+      description: "Annual real GDP growth (drives energy demand)"
+
+    energy_technology_cost_factor:
+      distribution: "uniform"
+      min: 0.60        # Optimistic: faster cost decline
+      max: 1.40        # Pessimistic: slower deployment
+      description: "Multiplier on renewable energy cost trajectory"
+
+    carbon_price_2030_usd_tco2:
+      distribution: "uniform"
+      min: 0
+      max: 80
+      description: "Effective carbon price (ETS + tax, if implemented)"
+
+    afolu_policy_stringency:
+      distribution: "uniform"
+      min: 0.0         # No AFOLU policy
+      max: 1.0         # Full AFOLU regulation
+      description: "Combined AFOLU policy effectiveness (0=none, 1=full)"
+
+    climate_finance_availability:
+      distribution: "uniform"
+      min: 0.0         # No external finance
+      max: 1.0         # Full conditional NDC support received
+      description: "International climate finance received as % of needed"
+
+  # Robustness satisficing threshold
+  satisficing:
+    target_metric: "emission_reduction_vs_bau_2030"
+    threshold: -0.22        # At minimum, meet unconditional NDC
+    threshold_label: "NDC Unconditional (−22% vs BAU)"
+
+# ============================================================
+# SECTOR-LEVEL PARAMETERS (MEXICO SPECIFIC)
+# ============================================================
+sector_parameters:
+
+  Energía:
+    # MtCO2e from INEGEI 2023 (approx values for 2019 reference)
+    emissions_2019_MtCO2e: 196.2
+    growth_driver: "gdp_electricity_intensity"
+    mitigation_lever: "renewable_share"
+    max_mitigation_potential_2030_pct: 0.42
+
+  Transporte:
+    emissions_2019_MtCO2e: 188.6
+    growth_driver: "gdp_vehicle_fleet"
+    mitigation_lever: "electrification_efficiency"
+    max_mitigation_potential_2030_pct: 0.30
+
+  AFOLU:
+    emissions_2019_MtCO2e: 92.1
+    growth_driver: "deforestation_rate"
+    mitigation_lever: "afolu_policy_stringency"
+    max_mitigation_potential_2030_pct: 0.65   # Including reforestation sinks
+    net_sink_potential_2040: -30.0             # MtCO2e if full restoration
+
+  Procesos Industriales:
+    emissions_2019_MtCO2e: 45.3
+    growth_driver: "gdp_industrial_output"
+    mitigation_lever: "energy_technology_cost_factor"
+    max_mitigation_potential_2030_pct: 0.25
+
+  Residuos:
+    emissions_2019_MtCO2e: 27.8
+    growth_driver: "population_gdp"
+    mitigation_lever: "methane_capture_rate"
+    max_mitigation_potential_2030_pct: 0.55

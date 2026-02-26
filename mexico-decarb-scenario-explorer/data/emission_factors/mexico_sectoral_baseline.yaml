@@ -1,0 +1,207 @@
+# data/emission_factors/mexico_sectoral_baseline.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+# Línea base de emisiones GEI por sector — México
+# Fuente: Inventario Nacional de Emisiones de GEI (INEGEI) — INECC/SEMARNAT
+# Referencia: Sexta Comunicación Nacional ante la CMNUCC (2018)
+# Complementado con datos: SENER Balance Nacional de Energía 2023, CONAFOR 2022
+#
+# Unidades: MtCO2e (Millones de toneladas CO2 equivalente)
+# GWP: AR6 (100 años)
+# ─────────────────────────────────────────────────────────────────────────────
+
+metadata:
+  base_year: 2015             # Año de referencia para la NDC de México
+  inegei_reference: "INEGEI 2015 — Sexta Comunicación Nacional CMNUCC"
+  total_emissions_mtco2e: 683.2  # Total nacional 2015 (sin UTCUTS)
+  total_with_lulucf_mtco2e: 679.3
+
+# ─── Emisiones sectoriales en año base (2015) ─────────────────────────────
+
+baseline_2015:
+  energy:
+    total: 443.5
+    subsectors:
+      transport: 178.2
+      electricity_generation: 148.3
+      industrial_energy: 71.8
+      residential_commercial: 32.4
+      oil_gas: 12.8
+  agriculture:
+    total: 80.3
+    subsectors:
+      livestock: 50.1
+      agricultural_soils: 22.4
+      rice_paddies: 4.2
+      burning_savanna: 3.6
+  waste:
+    total: 55.1
+    subsectors:
+      solid_waste: 31.2
+      wastewater: 18.9
+      hazardous_waste: 5.0
+  industrial_processes:
+    total: 41.7
+    subsectors:
+      cement: 18.4
+      chemicals: 10.3
+      metals: 8.2
+      hfc: 4.8
+  lulucf:           # Land Use, Land-Use Change and Forestry
+    total: -3.9     # Negativo = sumidero neto
+    subsectors:
+      deforestation_emissions: 87.4
+      forest_degradation: 23.1
+      biomass_removals: -114.4
+
+# ─── NDC de México — Compromisos al 2030 ──────────────────────────────────
+
+ndc_2030:
+  reference: "NDC Actualizada de México — CMNUCC (2022)"
+  unconditional_reduction_pct: 35.0  # % vs BAU 2030 (condicionado a financiamiento)
+  conditional_reduction_pct: 40.0    # % vs BAU 2030 con apoyo internacional
+  bau_2030_mtco2e: 981.0             # Escenario tendencial sin política
+  unconditional_target_mtco2e: 637.7
+  conditional_target_mtco2e: 588.6
+  
+  # Metas sectoriales explícitas en la NDC
+  sectoral_targets:
+    energy:
+      clean_electricity_pct: 35.0    # % de generación eléctrica de fuentes limpias
+    transport:
+      ev_fleet_pct: 15.0             # % de flota nueva eléctrica
+    deforestation:
+      zero_deforestation_year: 2030
+    afolu:
+      restoration_mha: 1.35          # Millones de ha a restaurar
+
+# ─── Parámetros de escenarios de trayectoria ──────────────────────────────
+
+scenario_parameters:
+
+  # Trayectoria de reducción anual de emisiones por sector y escenario
+  # Valores en % de reducción anual compuesta vs año base
+  annual_reduction_rates:
+
+    bau:
+      description: "Tendencial sin política adicional"
+      energy: -0.5          # Leve aumento por crecimiento económico
+      transport: -1.0
+      electricity: -0.5
+      agriculture: -0.2
+      waste: -0.8
+      industrial: -0.3
+      lulucf: 0.5           # Continúa deforestación
+
+    ndc_unconditional:
+      description: "NDC no condicionada (esfuerzo propio)"
+      energy: 2.8
+      transport: 3.5
+      electricity: 5.2       # Expansión renovables
+      agriculture: 1.2
+      waste: 3.8
+      industrial: 2.1
+      lulucf: 6.5            # Reducción deforestación + reforestación
+
+    ndc_conditional:
+      description: "NDC condicionada (con apoyo internacional)"
+      energy: 3.8
+      transport: 5.0
+      electricity: 7.5
+      agriculture: 2.0
+      waste: 5.2
+      industrial: 3.5
+      lulucf: 9.0
+
+    net_zero_2050:
+      description: "Trayectoria consistente con carbono neutro en 2050"
+      energy: 6.5
+      transport: 7.8
+      electricity: 12.0     # Descarb. casi total de electricidad
+      agriculture: 3.5
+      waste: 7.0
+      industrial: 6.0
+      lulucf: 12.5
+
+  # Incertidumbre por escenario (rango ± % del valor central)
+  uncertainty_ranges:
+    bau:
+      low: -0.10
+      high: 0.15
+    ndc_unconditional:
+      low: -0.20
+      high: 0.10
+    ndc_conditional:
+      low: -0.25
+      high: 0.08
+    net_zero_2050:
+      low: -0.30
+      high: 0.05
+
+# ─── Medidas de mitigación con potencial y costo estimado ─────────────────
+
+mitigation_measures:
+  # Cada medida: potencial de reducción (MtCO2e/año al 2030) y costo marginal (USD/tCO2e)
+  
+  electricity_decarbonization:
+    label: "Expansión renovables (solar + eólica)"
+    sector: electricity
+    potential_mt_2030: 85.0
+    abatement_cost_usd_tco2e: 18.5
+    implementation_complexity: medium
+    co_benefits: ["generación empleo", "seguridad energética"]
+
+  transport_electrification:
+    label: "Electrificación del transporte urbano"
+    sector: transport
+    potential_mt_2030: 42.3
+    abatement_cost_usd_tco2e: 35.0
+    implementation_complexity: high
+    co_benefits: ["calidad del aire", "salud pública"]
+
+  zero_deforestation:
+    label: "Cero deforestación + MRV territorial"
+    sector: lulucf
+    potential_mt_2030: 65.0
+    abatement_cost_usd_tco2e: 8.5
+    implementation_complexity: high
+    co_benefits: ["biodiversidad", "servicios ecosistémicos", "agua"]
+
+  forest_restoration:
+    label: "Restauración forestal (1.35 Mha)"
+    sector: lulucf
+    potential_mt_2030: 38.5
+    abatement_cost_usd_tco2e: 12.0
+    implementation_complexity: medium
+    co_benefits: ["captura carbono", "biodiversidad", "comunidades rurales"]
+
+  methane_waste:
+    label: "Captura de metano en residuos sólidos"
+    sector: waste
+    potential_mt_2030: 18.2
+    abatement_cost_usd_tco2e: 5.0
+    implementation_complexity: low
+    co_benefits: ["generación energía"]
+
+  improved_livestock:
+    label: "Manejo mejorado de ganado bovino"
+    sector: agriculture
+    potential_mt_2030: 12.4
+    abatement_cost_usd_tco2e: 22.0
+    implementation_complexity: medium
+    co_benefits: ["productividad agropecuaria"]
+
+  energy_efficiency_industry:
+    label: "Eficiencia energética industrial"
+    sector: industrial
+    potential_mt_2030: 22.8
+    abatement_cost_usd_tco2e: 15.0
+    implementation_complexity: medium
+    co_benefits: ["competitividad industrial", "reducción costos"]
+
+  carbon_price_mechanism:
+    label: "Sistema de comercio de emisiones (ETS México)"
+    sector: cross_cutting
+    potential_mt_2030: 55.0
+    abatement_cost_usd_tco2e: 28.0
+    implementation_complexity: high
+    co_benefits: ["recaudación pública", "innovación tecnológica"]
