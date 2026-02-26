@@ -28,7 +28,7 @@ Emission trajectories are computed for 8 sectors (Electricity, Transport, Indust
 ## Installation & Run
 
 ```bash
-git clone https://github.com/yourusername/mexico-decarb-scenario-explorer.git
+git clone https://github.com/Caro-rawr/mexico-decarb-scenario-explorer.git
 cd mexico-decarb-scenario-explorer
 pip install -r requirements.txt
 streamlit run app.py
@@ -63,6 +63,6 @@ mexico-decarb-scenario-explorer/
 
 ## Author
 
-Carolina Cruz Núñez | M.Sc. Sustainability Sciences, UNAM  
+Carolina Cruz Núñez | M.Sc. Sustainability Sciences
 Thesis: *Evaluation of Land-Use and Vegetation Strategies for Territorial Decarbonization in Yucatán*  
 [linkedin.com/in/carostrepto](https://linkedin.com/in/carostrepto)
